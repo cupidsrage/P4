@@ -1,0 +1,9 @@
+{
+  "name": "p4-multiplayer-browser",
+  "version": "1.0.0",
+  "description": "Railway-ready multiplayer browser game server for Phantasia 4",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
