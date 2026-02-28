@@ -3,75 +3,419 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Phantasia 4 - Play</title>
+  <title>Phantasia 4 - Browser Adventure</title>
   <style>
+    :root {
+      --bg: #120f1e;
+      --panel: #1e1a2f;
+      --text: #eee6ff;
+      --muted: #b7acce;
+      --accent: #a580ff;
+      --good: #69db7c;
+      --bad: #ff8787;
+      --warn: #ffd166;
+      --border: #3c335b;
+    }
+
+    * { box-sizing: border-box; }
+
     body {
+      margin: 0;
       font-family: Arial, Helvetica, sans-serif;
-      margin: 2rem auto;
-      max-width: 760px;
-      line-height: 1.5;
-      color: #222;
-      padding: 0 1rem;
+      background: radial-gradient(circle at top, #221a3a 0%, var(--bg) 55%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 1.2rem;
     }
-    .card {
-      border: 1px solid #ddd;
+
+    .layout {
+      max-width: 980px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 330px 1fr;
+      gap: 1rem;
+    }
+
+    .panel {
+      border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 1rem 1.25rem;
-      margin: 1rem 0;
-      background: #fafafa;
+      background: rgba(30, 26, 47, 0.94);
+      padding: 0.9rem;
     }
-    code {
-      background: #f0f0f0;
-      padding: 0.1rem 0.3rem;
-      border-radius: 4px;
+
+    h1, h2, h3 { margin: 0.2rem 0 0.8rem; }
+    h1 { font-size: 1.35rem; color: #fff; }
+    h2 { font-size: 1.05rem; color: #e8dbff; }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.45rem;
+      margin-bottom: 0.8rem;
     }
-    a.button {
-      display: inline-block;
-      margin-top: 0.5rem;
-      text-decoration: none;
-      padding: 0.5rem 0.8rem;
-      border-radius: 6px;
-      border: 1px solid #444;
-      color: #111;
-      background: #fff;
+
+    .stat {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.45rem 0.5rem;
+      background: #171326;
+      font-size: 0.92rem;
+    }
+
+    .stat strong { color: #fff; }
+    .muted { color: var(--muted); }
+
+    .bar-wrap {
+      margin: 0.45rem 0;
+      font-size: 0.9rem;
+    }
+
+    .bar {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      height: 16px;
+      background: #131024;
+      overflow: hidden;
+      margin-top: 0.15rem;
+    }
+
+    .fill {
+      height: 100%;
+      transition: width 250ms ease;
+      background: linear-gradient(90deg, #c92a2a, #ff8787);
+    }
+
+    .fill.mana { background: linear-gradient(90deg, #3b5bdb, #74c0fc); }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-top: 0.9rem;
+    }
+
+    button {
+      border: 1px solid #5f4f8e;
+      border-radius: 8px;
+      background: #2b2342;
+      color: #f4eeff;
       font-weight: 600;
+      padding: 0.55rem 0.5rem;
+      cursor: pointer;
+    }
+
+    button:hover:not(:disabled) { background: #3a2f5b; }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .battle {
+      min-height: 180px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.8rem;
+      background: #171326;
+    }
+
+    #log {
+      margin-top: 0.9rem;
+      max-height: 300px;
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.7rem;
+      background: #131024;
+      font-size: 0.93rem;
+      line-height: 1.35;
+    }
+
+    .entry { margin: 0 0 0.38rem; }
+    .good { color: var(--good); }
+    .bad { color: var(--bad); }
+    .warn { color: var(--warn); }
+
+    .footer {
+      margin-top: 0.95rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    a { color: #c8b2ff; }
+
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; }
+      .actions { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <h1>Play Phantasia 4</h1>
+  <div class="layout">
+    <section class="panel">
+      <h1>Phantasia 4: Browser Adventure</h1>
+      <p class="muted">A lightweight single-player battle mode inspired by the original game.</p>
 
-  <p>
-    This deployment serves the website and assets as static files. The original CGI endpoint
-    (<code>/cgi-bin/game.cgi</code>) is not present in this repository.
-  </p>
+      <div class="stat-grid">
+        <div class="stat">Level: <strong id="level">1</strong></div>
+        <div class="stat">XP: <strong id="xp">0</strong></div>
+        <div class="stat">Gold: <strong id="gold">0</strong></div>
+        <div class="stat">Potions: <strong id="potions">2</strong></div>
+      </div>
 
-  <div class="card">
-    <h2>What works right now</h2>
-    <ul>
-      <li>Game docs and pages (rules, tips, info, etc.)</li>
-      <li>Legacy client files included in this repo</li>
-    </ul>
-    <a class="button" href="intro.html">Open the rules</a>
-    <a class="button" href="info.html">Open game info</a>
+      <div class="bar-wrap">
+        Health <span id="hpLabel"></span>
+        <div class="bar"><div id="hpFill" class="fill"></div></div>
+      </div>
+
+      <div class="bar-wrap">
+        Mana <span id="manaLabel"></span>
+        <div class="bar"><div id="manaFill" class="fill mana"></div></div>
+      </div>
+
+      <div class="actions">
+        <button id="attackBtn">⚔️ Attack</button>
+        <button id="spellBtn">✨ Cast Spell (10 Mana)</button>
+        <button id="potionBtn">🧪 Drink Potion</button>
+        <button id="restBtn">🛌 Rest (skip turn)</button>
+        <button id="nextBtn" disabled>➡️ Next Encounter</button>
+        <button id="restartBtn">🔄 New Hero</button>
+      </div>
+
+      <p class="footer">Tip: Survive waves, gain XP, and level up. Bosses appear every 5th encounter.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Encounter</h2>
+      <div id="battle" class="battle"></div>
+
+      <h3>Chronicle</h3>
+      <div id="log" aria-live="polite"></div>
+
+      <p class="footer">
+        Looking for lore and classic pages? Visit <a href="intro.html">The Rules</a> or go <a href="index.html">home</a>.
+      </p>
+    </section>
   </div>
 
-  <div class="card">
-    <h2>Try the bundled legacy client</h2>
-    <p>
-      If your system supports running old Java archives, you can try the bundled client file:
-    </p>
-    <p><a href="118_client/118_client.jar">118_client/118_client.jar</a></p>
-  </div>
+  <script>
+    const heroBase = {
+      level: 1,
+      xp: 0,
+      xpToNext: 40,
+      gold: 0,
+      maxHp: 100,
+      hp: 100,
+      maxMana: 35,
+      mana: 35,
+      attackMin: 8,
+      attackMax: 14,
+      potions: 2,
+      encounters: 0
+    };
 
-  <div class="card">
-    <h2>For full online gameplay</h2>
-    <p>
-      You will need the original server-side CGI backend and configuration that handled
-      <code>/cgi-bin/game.cgi</code>.
-    </p>
-  </div>
+    let hero = structuredClone(heroBase);
+    let enemy = null;
+    let gameOver = false;
 
-  <p><a href="index.html">&larr; Back to home</a></p>
+    const monsters = [
+      { name: "Goblin Raider", hp: 35, attackMin: 4, attackMax: 8, xp: 12, gold: 9 },
+      { name: "Warg", hp: 44, attackMin: 5, attackMax: 10, xp: 16, gold: 12 },
+      { name: "Dark Acolyte", hp: 52, attackMin: 6, attackMax: 12, xp: 20, gold: 15 },
+      { name: "Cave Troll", hp: 70, attackMin: 8, attackMax: 14, xp: 28, gold: 20 },
+    ];
+
+    const bosses = [
+      { name: "Ancient Dragon", hp: 130, attackMin: 12, attackMax: 20, xp: 70, gold: 90 },
+      { name: "The Dark Lord", hp: 170, attackMin: 14, attackMax: 24, xp: 95, gold: 130 },
+    ];
+
+    const ids = (id) => document.getElementById(id);
+    const logEl = ids("log");
+    const battleEl = ids("battle");
+
+    const buttons = {
+      attack: ids("attackBtn"),
+      spell: ids("spellBtn"),
+      potion: ids("potionBtn"),
+      rest: ids("restBtn"),
+      next: ids("nextBtn"),
+      restart: ids("restartBtn")
+    };
+
+    function rand(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function addLog(message, cls = "") {
+      const p = document.createElement("p");
+      p.className = `entry ${cls}`;
+      p.textContent = message;
+      logEl.prepend(p);
+    }
+
+    function render() {
+      ids("level").textContent = hero.level;
+      ids("xp").textContent = `${hero.xp}/${hero.xpToNext}`;
+      ids("gold").textContent = hero.gold;
+      ids("potions").textContent = hero.potions;
+
+      ids("hpLabel").textContent = `${hero.hp}/${hero.maxHp}`;
+      ids("manaLabel").textContent = `${hero.mana}/${hero.maxMana}`;
+
+      ids("hpFill").style.width = `${Math.max(0, (hero.hp / hero.maxHp) * 100)}%`;
+      ids("manaFill").style.width = `${Math.max(0, (hero.mana / hero.maxMana) * 100)}%`;
+
+      buttons.spell.disabled = gameOver || !enemy || hero.mana < 10;
+      buttons.potion.disabled = gameOver || hero.potions <= 0 || hero.hp === hero.maxHp;
+      buttons.attack.disabled = gameOver || !enemy;
+      buttons.rest.disabled = gameOver || !enemy;
+      buttons.next.disabled = gameOver || !!enemy;
+
+      renderEncounter();
+    }
+
+    function renderEncounter() {
+      if (gameOver) {
+        battleEl.innerHTML = `<h3 class="bad">You have fallen.</h3><p>Your legend ends at level ${hero.level} with ${hero.gold} gold.</p>`;
+        return;
+      }
+
+      if (!enemy) {
+        battleEl.innerHTML = `<h3>No active enemy</h3><p>Catch your breath and begin the next encounter.</p>`;
+        return;
+      }
+
+      battleEl.innerHTML = `
+        <h3>${enemy.name}</h3>
+        <p class="muted">Encounter #${hero.encounters} ${enemy.boss ? "• Boss" : ""}</p>
+        <p>HP: <strong>${enemy.hp}/${enemy.maxHp}</strong></p>
+      `;
+    }
+
+    function enemyTurn() {
+      if (!enemy || gameOver) return;
+      const dmg = rand(enemy.attackMin, enemy.attackMax);
+      hero.hp = Math.max(0, hero.hp - dmg);
+      addLog(`${enemy.name} hits you for ${dmg}.`, "bad");
+
+      if (hero.hp <= 0) {
+        gameOver = true;
+        addLog("Your hero has been defeated. Press New Hero to try again.", "bad");
+      }
+    }
+
+    function checkEnemyDefeated() {
+      if (!enemy || enemy.hp > 0) return false;
+
+      addLog(`You defeated ${enemy.name}! +${enemy.xp} XP, +${enemy.gold} gold.`, "good");
+      hero.xp += enemy.xp;
+      hero.gold += enemy.gold;
+
+      if (Math.random() < 0.3) {
+        hero.potions += 1;
+        addLog("You found a healing potion.", "good");
+      }
+
+      enemy = null;
+      levelCheck();
+      return true;
+    }
+
+    function levelCheck() {
+      while (hero.xp >= hero.xpToNext) {
+        hero.xp -= hero.xpToNext;
+        hero.level += 1;
+        hero.xpToNext = Math.floor(hero.xpToNext * 1.35);
+        hero.maxHp += 18;
+        hero.maxMana += 8;
+        hero.attackMin += 2;
+        hero.attackMax += 3;
+        hero.hp = hero.maxHp;
+        hero.mana = hero.maxMana;
+        addLog(`Level up! You are now level ${hero.level}.`, "warn");
+      }
+    }
+
+    function spawnEnemy() {
+      hero.encounters += 1;
+      const isBoss = hero.encounters % 5 === 0;
+      const template = isBoss
+        ? bosses[rand(0, bosses.length - 1)]
+        : monsters[rand(0, monsters.length - 1)];
+
+      const scale = 1 + (hero.level - 1) * 0.18;
+      enemy = {
+        ...template,
+        boss: isBoss,
+        maxHp: Math.floor(template.hp * scale),
+        hp: Math.floor(template.hp * scale),
+        attackMin: Math.floor(template.attackMin * scale),
+        attackMax: Math.floor(template.attackMax * scale),
+        xp: Math.floor(template.xp * scale),
+        gold: Math.floor(template.gold * scale),
+      };
+
+      addLog(`A ${enemy.name} appears!`, enemy.boss ? "warn" : "");
+      render();
+    }
+
+    buttons.attack.addEventListener("click", () => {
+      if (!enemy || gameOver) return;
+      const dmg = rand(hero.attackMin, hero.attackMax);
+      enemy.hp = Math.max(0, enemy.hp - dmg);
+      addLog(`You slash ${enemy.name} for ${dmg}.`, "good");
+      if (!checkEnemyDefeated()) enemyTurn();
+      render();
+    });
+
+    buttons.spell.addEventListener("click", () => {
+      if (!enemy || gameOver || hero.mana < 10) return;
+      hero.mana -= 10;
+      const dmg = rand(hero.attackMax + 6, hero.attackMax + 16);
+      enemy.hp = Math.max(0, enemy.hp - dmg);
+      addLog(`Arcane blast hits ${enemy.name} for ${dmg}.`, "good");
+      if (!checkEnemyDefeated()) enemyTurn();
+      render();
+    });
+
+    buttons.potion.addEventListener("click", () => {
+      if (gameOver || hero.potions <= 0 || hero.hp === hero.maxHp) return;
+      hero.potions -= 1;
+      const heal = rand(22, 40);
+      hero.hp = Math.min(hero.maxHp, hero.hp + heal);
+      addLog(`You drink a potion and recover ${heal} HP.`, "good");
+      enemyTurn();
+      render();
+    });
+
+    buttons.rest.addEventListener("click", () => {
+      if (!enemy || gameOver) return;
+      const manaGain = rand(5, 11);
+      hero.mana = Math.min(hero.maxMana, hero.mana + manaGain);
+      addLog(`You steady your breath and recover ${manaGain} mana.`, "");
+      enemyTurn();
+      render();
+    });
+
+    buttons.next.addEventListener("click", () => {
+      if (enemy || gameOver) return;
+      const heal = rand(6, 12);
+      const mana = rand(4, 8);
+      hero.hp = Math.min(hero.maxHp, hero.hp + heal);
+      hero.mana = Math.min(hero.maxMana, hero.mana + mana);
+      addLog(`You prepare for battle (+${heal} HP, +${mana} mana).`, "");
+      spawnEnemy();
+      render();
+    });
+
+    buttons.restart.addEventListener("click", () => {
+      hero = structuredClone(heroBase);
+      enemy = null;
+      gameOver = false;
+      logEl.innerHTML = "";
+      addLog("A new hero enters the realm.", "warn");
+      render();
+    });
+
+    addLog("A new hero enters the realm.", "warn");
+    render();
+  </script>
 </body>
 </html>
