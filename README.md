@@ -23,3 +23,5 @@ docker run --rm -p 8080:8080 -e PORT=8080 p4-railway
 ```
 
 Then open <http://localhost:8080>.
+
+The game is now directly playable in a browser at <http://localhost:8080/play.html> (single-player battle mode).
