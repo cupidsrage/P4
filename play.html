@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phantasia 4 - Play</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 2rem auto;
+      max-width: 760px;
+      line-height: 1.5;
+      color: #222;
+      padding: 0 1rem;
+    }
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+      background: #fafafa;
+    }
+    code {
+      background: #f0f0f0;
+      padding: 0.1rem 0.3rem;
+      border-radius: 4px;
+    }
+    a.button {
+      display: inline-block;
+      margin-top: 0.5rem;
+      text-decoration: none;
+      padding: 0.5rem 0.8rem;
+      border-radius: 6px;
+      border: 1px solid #444;
+      color: #111;
+      background: #fff;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <h1>Play Phantasia 4</h1>
+
+  <p>
+    This deployment serves the website and assets as static files. The original CGI endpoint
+    (<code>/cgi-bin/game.cgi</code>) is not present in this repository.
+  </p>
+
+  <div class="card">
+    <h2>What works right now</h2>
+    <ul>
+      <li>Game docs and pages (rules, tips, info, etc.)</li>
+      <li>Legacy client files included in this repo</li>
+    </ul>
+    <a class="button" href="intro.html">Open the rules</a>
+    <a class="button" href="info.html">Open game info</a>
+  </div>
+
+  <div class="card">
+    <h2>Try the bundled legacy client</h2>
+    <p>
+      If your system supports running old Java archives, you can try the bundled client file:
+    </p>
+    <p><a href="118_client/118_client.jar">118_client/118_client.jar</a></p>
+  </div>
+
+  <div class="card">
+    <h2>For full online gameplay</h2>
+    <p>
+      You will need the original server-side CGI backend and configuration that handled
+      <code>/cgi-bin/game.cgi</code>.
+    </p>
+  </div>
+
+  <p><a href="index.html">&larr; Back to home</a></p>
+</body>
+</html>
